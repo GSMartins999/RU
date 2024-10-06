@@ -129,7 +129,7 @@
             <button type="submit" class="btn btn-primary mb-2">Adicionar</button>
             <a href="{{ route('admin.viewcardapio') }}" class="btn btn-primary mb-2">Ver Cardápio</a>
             <div class="text-end mb-3 mt-3">
-                <a href="{{ route('admin.reservas') }}" class="btn btn-primary mb-2">Ver Reservas</a>
+            <a href="{{ route('admin.reservas') }}" class="btn btn-primary">Ver Reservas</a>
             </div>
 
 

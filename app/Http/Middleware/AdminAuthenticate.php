@@ -2,29 +2,23 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Auth\Middleware\Authenticate as Middleware;
+use Closure;
 use Illuminate\Http\Request;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
-
-class AdminAuthenticate extends Middleware
+class AdminAuthenticate
 {
     /**
-     * Get the path the user should be redirected to when they are not authenticated.
+     * Handle an incoming request.
      */
-    protected function redirectTo(Request $request): ?string
+    public function handle(Request $request, Closure $next)
     {
-        return $request->expectsJson() ? null : route('admin.login');
-    }
-
-     protected function authenticate($request, array $guards)
-    {
-        if ($this->auth->guard('admin')->check()) {
-                return $this->auth->shouldUse('admin');
+        // Verifica se o admin está autenticado
+        if (!Auth::guard('admin')->check()) {
+            // Se não estiver, redireciona para a tela de login do admin
+            return redirect()->route('admin.login');
         }
 
-        $this->unauthenticated($request, ['admin']);
+        return $next($request);
     }
-
-
 }

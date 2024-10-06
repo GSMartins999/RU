@@ -59,6 +59,6 @@ Route::get('admin/dashboard', [HomeController::class, 'index'])->name('admin.das
 
 use App\Http\Controllers\ReservaController;
 
-Route::middleware(['auth', 'admin'])->group(function () {
+Route::middleware(['admin.auth'])->group(function () {
     Route::get('/admin/reservas', [ReservaController::class, 'index'])->name('admin.reservas');
 });

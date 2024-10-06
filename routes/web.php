@@ -42,3 +42,20 @@ Route::group(['prefix' => 'admin'], function(){
         Route::post('dashboard/store', [App\Http\Livewire\CardapioController::class, 'store']);
     });
 });
+
+
+Route::get('/reservas', Calendar::class);
+
+
+// Rota para visualizar o cardápio
+Route::get('/admin/viewcardapio', CardapioController::class . '@show')->name('admin.viewcardapio');
+
+// Rota para editar o cardápio
+
+Route::get('/cardapio/{id}/edit', [CardapioController::class, 'edit'])->name('cardapio.edit');
+Route::put('/cardapio/{id}/update', [CardapioController::class, 'update'])->name('cardapio.update');
+
+Route::get('dashboard', [HomeController::class, 'index'])->name('admin.dashboard');
+
+
+

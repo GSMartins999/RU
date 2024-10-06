@@ -451,6 +451,7 @@
 
             @if (Route::has('register'))
             <a href="{{ route('register') }}" class="ml-4 text-sm text-white dark:text-white underline">Registrar</a>
+            <a href="{{route('admin.login')}}"class="ml-4 text-sm text-white dark:text-white underline">Administrador</a>
             @endif
             @endauth
         </div>

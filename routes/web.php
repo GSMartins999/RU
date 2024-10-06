@@ -55,7 +55,10 @@ Route::get('/admin/viewcardapio', CardapioController::class . '@show')->name('ad
 Route::get('/cardapio/{id}/edit', [CardapioController::class, 'edit'])->name('cardapio.edit');
 Route::put('/cardapio/{id}/update', [CardapioController::class, 'update'])->name('cardapio.update');
 
-Route::get('dashboard', [HomeController::class, 'index'])->name('admin.dashboard');
+Route::get('admin/dashboard', [HomeController::class, 'index'])->name('admin.dashboard');
 
+use App\Http\Controllers\ReservaController;
 
-
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/reservas', [ReservaController::class, 'index'])->name('admin.reservas');
+});

@@ -47,10 +47,8 @@ Route::group(['prefix' => 'admin'], function(){
 Route::get('/reservas', Calendar::class);
 
 
-// Rota para visualizar o cardápio
 Route::get('/admin/viewcardapio', CardapioController::class . '@show')->name('admin.viewcardapio');
 
-// Rota para editar o cardápio
 
 Route::get('/cardapio/{id}/edit', [CardapioController::class, 'edit'])->name('cardapio.edit');
 Route::put('/cardapio/{id}/update', [CardapioController::class, 'update'])->name('cardapio.update');
@@ -62,3 +60,4 @@ use App\Http\Controllers\ReservaController;
 Route::middleware(['admin.auth'])->group(function () {
     Route::get('/admin/reservas', [ReservaController::class, 'index'])->name('admin.reservas');
 });
+

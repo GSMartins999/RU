@@ -7,9 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualização do Cardápio</title>
 
-    <!-- Estilos para o preloader -->
     <style>
-        /* Preloader - Tela de carregamento */
         #preloader {
             position: fixed;
             left: 0;
@@ -23,7 +21,6 @@
             align-items: center;
         }
 
-        /* Oculta o conteúdo da página até o carregamento estar completo */
         #content {
             display: none;
         }
@@ -32,7 +29,6 @@
 
 <body class="container-fluid">
 
-    <!-- Preloader com animação Lottie -->
     <div id="preloader">
         <lottie-player
             src="https://lottie.host/ab8286f7-83fd-4462-8c06-9440ce06c379/AsMft4RBOD.json"
@@ -44,7 +40,6 @@
         </lottie-player>
     </div>
 
-    <!-- Conteúdo da página -->
     <div id="content">
         <div class="text-end mb-3 mt-3">
             <form action="{{ route('logout') }}" method="POST" style="display: inline;">
@@ -102,13 +97,11 @@
             </tbody>
         </table>
 
-        <!-- Botão de Logout -->
         <div class="text-center mb-3">
             <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary mb-2">Voltar para Dashboard</a>
             <a href="{{ route('admin.reservas') }}" class="btn btn-primary mb-2">Ver Reservas</a>
         </div>
 
-        <!-- Timer do alert -->
         <div>
             <script>
                 setTimeout(function() {
@@ -118,14 +111,12 @@
         </div>
     </div>
 
-    <!-- Script para Lottie Player -->
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 
-    <!-- Script para ocultar o preloader quando o carregamento estiver completo -->
     <script>
         window.onload = function() {
-            document.getElementById('preloader').style.display = 'none'; // Remove o preloader
-            document.getElementById('content').style.display = 'block'; // Mostra o conteúdo da página
+            document.getElementById('preloader').style.display = 'none'; 
+            document.getElementById('content').style.display = 'block'; 
         };
     </script>
 

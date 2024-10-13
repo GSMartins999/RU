@@ -3,16 +3,16 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
-use App\Models\Reserva; // Certifique-se de importar o modelo correto
+use App\Models\Reserva;
 use Carbon\Carbon;
 
 class Calendar extends Component
 {
     public $almoco = false;
     public $janta = false;
-    public $start; // Data selecionada
+    public $start; 
     public $events = [];
-    public $reservas; // Para armazenar as reservas
+    public $reservas; 
 
     public function mount()
     {
@@ -22,64 +22,108 @@ class Calendar extends Component
 
     public function formatEvents($reservas)
     {
-        $today = Carbon::now()->format('Y-m-d'); // Formato da data atual
+        $today = Carbon::now()->format('Y-m-d'); 
 
         return $reservas->map(function ($reserva) use ($today) {
             return [
                 'title' => ($reserva->almoco ? 'Almoço' : '') . ($reserva->janta ? ' e Janta' : ''),
                 'start' => $reserva->start,
                 'id' => $reserva->id,
-                'classNames' => $reserva->start === $today ? ['today-event'] : [], // Classe para o dia atual
+                'classNames' => $reserva->start === $today ? ['today-event'] : [], 
             ];
         })->toArray();
     }
 
-
     public function store()
     {
-        // Valida as entradas
+        if (Carbon::parse($this->start)->isPast()) {
+            $this->emit('mensagem', 'Não é possível agendar refeições para datas que já passaram.', 'erro');
+            return;
+        }
+    
         $this->validate([
             'start' => 'required|date|after_or_equal:today',
             'almoco' => 'required_without:janta',
             'janta' => 'required_without:almoco',
         ]);
-
-        // Se não houver refeições selecionadas, adicione um erro
+        
         if (!$this->almoco && !$this->janta) {
-            $this->addError('refeicao', 'Por favor, selecione pelo menos uma refeição.');
-            return; // Saia do método para evitar a criação da reserva
+            $this->emit('mensagem', 'Selecione pelo menos uma refeição para agendar.', 'erro');
+            return;
         }
+    
+        $reservaAlmocoExistente = Reserva::where('user_id', auth()->id())
+            ->where('start', $this->start)
+            ->where('almoco', 1)
+            ->exists();
+    
+        $reservaJantaExistente = Reserva::where('user_id', auth()->id())
+            ->where('start', $this->start)
+            ->where('janta', 1)
+            ->exists();
+    
+        if ($this->almoco && $reservaAlmocoExistente) {
+            $this->emit('mensagem', 'Você já fez uma reserva para o almoço neste dia.', 'erro');
+            return;
+        }
+    
+        if ($this->janta && $reservaJantaExistente) {
+            $this->emit('mensagem', 'Você já fez uma reserva para a janta neste dia.', 'erro');
+            return;
+        }
+    
+        try {
+            Reserva::create([
+                'user_id' => auth()->id(),
+                'start' => $this->start,
+                'almoco' => $this->almoco ? 1 : 0,
+                'janta' => $this->janta ? 1 : 0,
+            ]);
+    
 
-        // Cria a reserva
-        Reserva::create([
-            'user_id' => auth()->id(),
-            'start' => $this->start,
-            'almoco' => $this->almoco ? 1 : 0,
-            'janta' => $this->janta ? 1 : 0,
-        ]);
+            $this->emit('mensagem', 'Refeição agendada com sucesso!', 'sucesso');
+    
 
-        // Mensagem de sucesso
-        session()->flash('message', 'Refeição agendada com sucesso!');
+            $this->almoco = false;
+            $this->janta = false;
+            $this->start = null;
+    
 
-        // Atualiza as reservas e eventos
-        $this->mount(); // Atualiza o calendário
+            return redirect()->to('/reservas'); 
+            
+    
+        } catch (\Exception $e) {
+            $this->handleError($e, 'Erro ao agendar a refeição.');
+        }
     }
-
-
+    
+    
+    
     public function destroy($id)
     {
-        // Encontra a reserva pelo ID
-        $reserva = Reserva::find($id);
-        if ($reserva && $reserva->user_id == auth()->id()) {
-            // Cancela a reserva
-            $reserva->delete();
-            session()->flash('message', 'Refeição cancelada com sucesso!');
-        } else {
-            session()->flash('message', 'Você não pode cancelar esta reserva.');
-        }
+        try {
+            $reserva = Reserva::find($id);
 
-        // Redireciona para atualizar a página
-        return redirect()->to('/reservas');
+            if ($reserva && $reserva->user_id == auth()->id()) {
+                $reserva->delete();
+                $this->emit('mensagem', 'Refeição cancelada com sucesso!', 'sucesso');
+            } else {
+                $this->emit('mensagem', 'Você não pode cancelar esta reserva.', 'erro');
+            }
+
+            $this->emit('reservas-atualizadas');
+            return redirect()->to('/reservas');
+        } catch (\Exception $e) {
+            $this->handleError($e, 'Erro ao cancelar a refeição.');
+        }
+    }
+
+    protected function handleError($exception, $defaultMessage)
+    {
+
+        \Log::error($exception);
+
+        $this->emit('mensagem', $defaultMessage . ' ' . $exception->getMessage(), 'erro');
     }
 
     public function render()

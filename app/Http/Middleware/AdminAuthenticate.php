@@ -13,9 +13,7 @@ class AdminAuthenticate
      */
     public function handle(Request $request, Closure $next)
     {
-        // Verifica se o admin está autenticado
         if (!Auth::guard('admin')->check()) {
-            // Se não estiver, redireciona para a tela de login do admin
             return redirect()->route('admin.login');
         }
 

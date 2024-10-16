@@ -16,9 +16,12 @@ class Calendar extends Component
 
     public function mount()
     {
-        $this->reservas = Reserva::where('start', '>=', now())->get();
+        $this->reservas = Reserva::where('user_id', auth()->id())
+                                 ->where('start', '>=', now())
+                                 ->get();
         $this->events = $this->formatEvents($this->reservas);
     }
+    
 
     public function formatEvents($reservas)
     {

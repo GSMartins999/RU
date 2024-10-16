@@ -83,10 +83,8 @@ class CardapioController extends Component
 
     public function edit($id)
     {
-        // Faz um "select" no banco buscando o cardápio pelo ID
         $cardapio = Cardapio::findOrFail($id);
 
-        // Retorna a view e os dados do cardápio
         return view('admin.editar', ['cardapio' => $cardapio]);
     }
 
@@ -94,12 +92,10 @@ class CardapioController extends Component
 
     public function update(Request $request, $id)
     {
-        $request->validate($this->rules); // Validação antes de processar
+        $request->validate($this->rules); 
 
-        // Encontre o cardápio
         $cardapio = Cardapio::findOrFail($id);
 
-        // Atualize os campos diretamente
         $cardapio->prato_principal = $request->input('prato_principal');
         $cardapio->vegetariana = $request->input('vegetariana');
         $cardapio->vegana = $request->input('vegana');
@@ -113,7 +109,6 @@ class CardapioController extends Component
         $cardapio->sobremesa = $request->input('sobremesa');
         $cardapio->data = $request->input('data');
 
-        // Salvar
         $cardapio->save();
 
         session()->flash('message', 'Cardápio atualizado com sucesso!');
